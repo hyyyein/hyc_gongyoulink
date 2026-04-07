@@ -17,6 +17,9 @@
   header {
     padding: 32px 40px 24px;
     border-bottom: 1px solid #222;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
   }
 
   header h1 {
@@ -346,6 +349,7 @@
 
 <header>
   <h1>링크 보관함 by hyeincho</h1>
+  <button class="add-btn" onclick="openModal()">+ 링크 추가</button>
 </header>
 
 <div class="controls">
@@ -372,7 +376,6 @@
     <option value="desc">최신순</option>
     <option value="asc">오래된순</option>
   </select>
-  <button class="add-btn" onclick="openModal()">+ 링크 추가</button>
 </div>
 
 <div id="status">Firebase 연결 중...</div>
