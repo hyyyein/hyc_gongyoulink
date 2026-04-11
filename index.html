@@ -1125,6 +1125,7 @@
           <div class="card-meta">
             <span class="eye-icon"><svg width="12" height="12" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M8 3C4.5 3 1.5 8 1.5 8C1.5 8 4.5 13 8 13C11.5 13 14.5 8 14.5 8C14.5 8 11.5 3 8 3Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><circle cx="8" cy="8" r="2" stroke="currentColor" stroke-width="1.4"/></svg> ${l.views || 0}</span>
             <span>♥ ${l.likes || 0}</span>
+            <span>💬 ${l.commentCount || 0}</span>
             ${l.createdAt ? `<span>${new Date(l.createdAt).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'})}</span>` : ''}
           </div>
         </div>
@@ -1299,6 +1300,7 @@
     if (!text) return;
     const commentsRef = collection(db, "links", currentDetailLink.id, "comments");
     await addDoc(commentsRef, { author, text, createdAt: Date.now() });
+    await updateDoc(doc(db, "links", currentDetailLink.id), { commentCount: increment(1) });
     document.getElementById('commentText').value = '';
   };
 
