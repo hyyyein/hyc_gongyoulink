@@ -359,6 +359,8 @@
     background: var(--sky-pale);
     color: var(--sky);
     border: 1px solid var(--border);
+    white-space: nowrap;
+    flex-shrink: 0;
   }
 
   .card-meta {
@@ -381,17 +383,19 @@
   .card:hover .card-actions { opacity: 1; }
 
   .card-actions button {
-    background: #eef6fc;
+    background: var(--sky-pale);
     border: 1px solid var(--border);
-    border-radius: 2px;
-    color: var(--muted);
+    border-radius: 3px;
+    color: var(--sky);
     font-size: 10px;
-    padding: 2px 6px;
+    font-weight: bold;
+    padding: 1px 7px;
     cursor: pointer;
     transition: all 0.1s;
     font-family: inherit;
+    white-space: nowrap;
   }
-  .card-actions button:hover { background: var(--sky-pale); color: var(--sky); }
+  .card-actions button:hover { background: var(--sky); color: #fff; }
   .card-actions .del-btn:hover { background: #ffeef0; color: #cc4455; border-color: #cc4455; }
 
   .empty {
