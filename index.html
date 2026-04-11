@@ -104,6 +104,7 @@
 
   .add-btn:hover { opacity: 0.85; }
 
+  /* ========== ADD/EDIT MODAL ========== */
   .modal-bg {
     display: none;
     position: fixed;
@@ -121,8 +122,10 @@
     border: 1px solid #2a2a2a;
     border-radius: 14px;
     padding: 28px;
-    width: 440px;
+    width: 480px;
     max-width: 90vw;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
   .modal h2 { font-size: 16px; font-weight: 600; margin-bottom: 20px; }
@@ -138,7 +141,8 @@
   .modal label:first-of-type { margin-top: 0; }
 
   .modal input[type="text"],
-  .modal input[type="url"] {
+  .modal input[type="url"],
+  .modal textarea {
     width: 100%;
     background: #111;
     border: 1px solid #2a2a2a;
@@ -148,9 +152,12 @@
     font-size: 14px;
     outline: none;
     transition: border-color 0.15s;
+    font-family: inherit;
+    resize: vertical;
   }
 
-  .modal input:focus { border-color: #555; }
+  .modal textarea { min-height: 80px; }
+  .modal input:focus, .modal textarea:focus { border-color: #555; }
 
   .modal-tags {
     display: flex;
@@ -171,6 +178,23 @@
   }
 
   .modal-tag.selected { background: #fff; color: #000; border-color: #fff; }
+
+  .prompt-fields {
+    display: none;
+    border-top: 1px solid #2a2a2a;
+    margin-top: 16px;
+    padding-top: 4px;
+  }
+  .prompt-fields.visible { display: block; }
+
+  .prompt-fields-header {
+    font-size: 11px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 14px;
+    margin-bottom: 2px;
+  }
 
   .modal-actions {
     display: flex;
@@ -204,6 +228,7 @@
   .btn-save:hover { opacity: 0.85; }
   .btn-save:disabled { opacity: 0.4; cursor: not-allowed; }
 
+  /* ========== GRID ========== */
   .grid {
     padding: 24px 40px 60px;
     display: grid;
@@ -217,7 +242,7 @@
     border-radius: 12px;
     overflow: hidden;
     transition: border-color 0.15s, transform 0.15s;
-    position: relative;
+    cursor: pointer;
   }
 
   .card:hover { border-color: #3a3a3a; transform: translateY(-2px); }
@@ -284,6 +309,7 @@
     display: flex;
     gap: 4px;
     flex-wrap: wrap;
+    align-items: center;
   }
 
   .card-tag {
@@ -295,9 +321,12 @@
     color: #aaa;
   }
 
-  .card-date {
+  .card-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
     font-size: 11px;
-    color: #444;
+    color: #555;
     margin-top: 8px;
   }
 
@@ -324,17 +353,6 @@
   .card-actions button:hover { background: #3a3a3a; color: #fff; }
   .card-actions .del-btn:hover { background: #3d1a1a; color: #ff6b6b; }
 
-  .card-link {
-    position: absolute;
-    inset: 0;
-    z-index: 1;
-  }
-
-  .card-actions, .card-actions button {
-    position: relative;
-    z-index: 2;
-  }
-
   .empty {
     grid-column: 1 / -1;
     text-align: center;
@@ -349,6 +367,340 @@
     color: #555;
     font-size: 14px;
   }
+
+  /* ========== DETAIL MODAL ========== */
+  .detail-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.82);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .detail-bg.open { display: flex; }
+
+  .detail-modal {
+    background: #1a1a1a;
+    border: 1px solid #2a2a2a;
+    border-radius: 16px;
+    width: 900px;
+    max-width: 95vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  .detail-close {
+    position: sticky;
+    top: 16px;
+    float: right;
+    margin: 16px 16px 0 0;
+    background: #2a2a2a;
+    border: none;
+    border-radius: 8px;
+    color: #888;
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s, color 0.15s;
+    flex-shrink: 0;
+  }
+  .detail-close:hover { background: #3a3a3a; color: #fff; }
+
+  .detail-top {
+    display: flex;
+    clear: both;
+  }
+
+  .detail-thumb-wrap {
+    flex: 0 0 45%;
+    position: relative;
+    border-radius: 16px 0 0 0;
+    overflow: hidden;
+    min-height: 320px;
+    background: #111;
+    cursor: pointer;
+  }
+
+  .detail-thumb-wrap img {
+    width: 100%;
+    height: 100%;
+    min-height: 320px;
+    object-fit: cover;
+    display: block;
+    transition: opacity 0.15s;
+  }
+
+  .detail-thumb-wrap:hover img { opacity: 0.85; }
+
+  .detail-thumb-placeholder {
+    width: 100%;
+    min-height: 320px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 64px;
+  }
+
+  .detail-thumb-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.15s;
+    background: rgba(0,0,0,0.4);
+  }
+
+  .detail-thumb-wrap:hover .detail-thumb-overlay { opacity: 1; }
+
+  .detail-thumb-overlay span {
+    background: rgba(255,255,255,0.95);
+    color: #000;
+    padding: 8px 18px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  .detail-info {
+    flex: 1;
+    padding: 32px 48px 28px 28px;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .detail-tags {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+
+  .detail-tag {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    background: #2a2a2a;
+    color: #aaa;
+  }
+
+  .detail-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.3;
+    margin-bottom: 14px;
+    word-break: break-word;
+  }
+
+  .detail-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid #222;
+  }
+
+  .detail-desc {
+    font-size: 14px;
+    color: #aaa;
+    line-height: 1.6;
+    flex: 1;
+    word-break: break-word;
+  }
+
+  .detail-stats {
+    display: flex;
+    gap: 14px;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #222;
+    align-items: center;
+  }
+
+  .stat-item {
+    font-size: 13px;
+    color: #666;
+  }
+
+  .like-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #666;
+    background: none;
+    border: 1px solid #2a2a2a;
+    border-radius: 20px;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+
+  .like-btn:hover { border-color: #e05555; color: #e05555; }
+  .like-btn.liked { background: #3d1a1a; border-color: #e05555; color: #e05555; }
+
+  /* Prompt sections */
+  .detail-body {
+    padding: 0 28px 28px;
+    border-top: 1px solid #222;
+  }
+
+  .detail-section { margin-top: 22px; }
+
+  .detail-section-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #777;
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .detail-section-content {
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.6;
+    background: #111;
+    border-radius: 8px;
+    padding: 14px;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  .copy-btn {
+    background: #2a2a2a;
+    border: none;
+    border-radius: 6px;
+    color: #888;
+    font-size: 12px;
+    padding: 4px 10px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .copy-btn:hover { background: #3a3a3a; color: #fff; }
+  .copy-btn.copied { background: #1a3a1a; color: #6fcf6f; }
+
+  /* Comments */
+  .comments-section {
+    padding: 0 28px 28px;
+    border-top: 1px solid #222;
+  }
+
+  .comments-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #777;
+    padding-top: 20px;
+    margin-bottom: 16px;
+  }
+
+  .comment-item {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  .comment-avatar {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: #2a2a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    color: #888;
+    flex-shrink: 0;
+  }
+
+  .comment-content { flex: 1; min-width: 0; }
+
+  .comment-author {
+    font-size: 12px;
+    font-weight: 500;
+    color: #aaa;
+    margin-bottom: 3px;
+  }
+
+  .comment-text {
+    font-size: 13px;
+    color: #ccc;
+    line-height: 1.5;
+    word-break: break-word;
+  }
+
+  .comment-date {
+    font-size: 11px;
+    color: #444;
+    margin-top: 3px;
+  }
+
+  .comment-form {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #1a1a1a;
+  }
+
+  .comment-form input[type="text"] {
+    flex: 0 0 100px;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #e8e8e8;
+    font-size: 13px;
+    outline: none;
+    font-family: inherit;
+  }
+
+  .comment-form textarea {
+    flex: 1;
+    background: #111;
+    border: 1px solid #2a2a2a;
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: #e8e8e8;
+    font-size: 13px;
+    outline: none;
+    resize: none;
+    height: 38px;
+    font-family: inherit;
+  }
+
+  .comment-form input:focus, .comment-form textarea:focus { border-color: #555; }
+
+  .comment-submit {
+    background: #fff;
+    color: #000;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .comment-submit:hover { opacity: 0.85; }
 </style>
 </head>
 <body>
@@ -380,6 +732,7 @@
     <button class="tag-btn" data-tag="개발">개발</button>
     <button class="tag-btn" data-tag="3D">3D</button>
     <button class="tag-btn" data-tag="피그마">피그마</button>
+    <button class="tag-btn" data-tag="프롬프트">프롬프트</button>
     <button class="tag-btn" data-tag="기타">기타</button>
   </div>
   <select class="sort-select" id="sortSelect">
@@ -391,7 +744,7 @@
 <div id="status">Firebase 연결 중...</div>
 <div class="grid" id="grid" style="display:none"></div>
 
-<!-- Modal -->
+<!-- Add/Edit Modal -->
 <div class="modal-bg" id="modalBg" onclick="handleBgClick(event)">
   <div class="modal">
     <h2 id="modalTitle">링크 추가</h2>
@@ -419,9 +772,24 @@
       <button class="modal-tag" data-tag="클립스튜디오">클립스튜디오</button>
       <button class="modal-tag" data-tag="3D">3D</button>
       <button class="modal-tag" data-tag="피그마">피그마</button>
+      <button class="modal-tag" data-tag="프롬프트">프롬프트</button>
       <button class="modal-tag" data-tag="개발">개발</button>
       <button class="modal-tag" data-tag="기타">기타</button>
     </div>
+
+    <!-- 프롬프트 태그 선택 시 표시 -->
+    <div class="prompt-fields" id="promptFields">
+      <div class="prompt-fields-header">프롬프트 상세</div>
+      <label>프롬프트 소개</label>
+      <textarea id="promptIntroInput" placeholder="어떤 용도의 프롬프트인지 간단히..."></textarea>
+      <label>프롬프트 실행환경 <span style="color:#555;font-size:11px">(예: DALL-E, ComfyUI, NAI, 미드저니)</span></label>
+      <input type="text" id="promptEnvInput" placeholder="실행환경...">
+      <label>프롬프트</label>
+      <textarea id="promptTextInput" placeholder="프롬프트 본문..." style="min-height:120px"></textarea>
+      <label>활용 팁 <span style="color:#555;font-size:11px">(선택)</span></label>
+      <textarea id="promptTipInput" placeholder="사용 팁이나 주의사항..."></textarea>
+    </div>
+
     <div class="modal-actions">
       <button class="btn-cancel" onclick="closeModal()">취소</button>
       <button class="btn-save" id="saveBtn" onclick="saveLink()">저장</button>
@@ -429,10 +797,36 @@
   </div>
 </div>
 
-<!-- ✅ 여기에 Firebase config를 붙여넣으세요 -->
+<!-- Detail Modal -->
+<div class="detail-bg" id="detailBg">
+  <div class="detail-modal" id="detailModal">
+    <button class="detail-close" onclick="closeDetail()">✕</button>
+    <div class="detail-top">
+      <div class="detail-thumb-wrap" id="detailThumbWrap"></div>
+      <div class="detail-info">
+        <div class="detail-tags" id="detailTags"></div>
+        <div class="detail-title" id="detailTitle"></div>
+        <div class="detail-meta" id="detailMeta"></div>
+        <div class="detail-desc" id="detailDesc"></div>
+        <div class="detail-stats" id="detailStats"></div>
+      </div>
+    </div>
+    <div class="detail-body" id="detailBody" style="display:none"></div>
+    <div class="comments-section" id="commentsSection">
+      <div class="comments-title">댓글</div>
+      <div id="commentsList"></div>
+      <div class="comment-form">
+        <input type="text" id="commentAuthor" placeholder="닉네임">
+        <textarea id="commentText" placeholder="댓글을 남겨보세요..."></textarea>
+        <button class="comment-submit" onclick="submitComment()">등록</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
-  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
+  import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query, increment, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBAPs7d59vZFkw2RSLUesnudcrZnNhxEdg",
@@ -453,6 +847,8 @@
   let fetchTimer = null;
   let editId = null;
   let pendingMeta = {};
+  let currentDetailLink = null;
+  let detailCommentUnsub = null;
 
   // 실시간 동기화
   const q = query(colRef, orderBy("createdAt", "desc"));
@@ -461,6 +857,10 @@
     document.getElementById('status').style.display = 'none';
     document.getElementById('grid').style.display = 'grid';
     render();
+    if (currentDetailLink) {
+      const updated = links.find(l => l.id === currentDetailLink.id);
+      if (updated) { currentDetailLink = updated; renderDetailStats(); }
+    }
   }, (err) => {
     document.getElementById('status').textContent = 'Firebase 연결 실패. config를 확인해주세요.';
     console.error(err);
@@ -485,8 +885,19 @@
     return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
 
+  function getLikedSet() {
+    try { return new Set(JSON.parse(localStorage.getItem('likedLinks') || '[]')); } catch { return new Set(); }
+  }
+
+  function setLiked(id, liked) {
+    const s = getLikedSet();
+    if (liked) s.add(id); else s.delete(id);
+    localStorage.setItem('likedLinks', JSON.stringify([...s]));
+  }
+
+  // ========== RENDER CARDS ==========
   function render() {
-    const q = document.getElementById('searchInput').value.toLowerCase();
+    const searchQ = document.getElementById('searchInput').value.toLowerCase();
     const grid = document.getElementById('grid');
     const sortOrder = document.getElementById('sortSelect').value;
     const sorted = [...links].sort((a, b) => sortOrder === 'asc' ? a.createdAt - b.createdAt : b.createdAt - a.createdAt);
@@ -494,7 +905,7 @@
     let filtered = sorted.filter(l => {
       const linkTags = Array.isArray(l.tags) ? l.tags : (l.tag ? [l.tag] : []);
       const matchTag = selectedTags.size === 0 || linkTags.some(t => selectedTags.has(t));
-      const matchQ = !q || (l.title||'').toLowerCase().includes(q) || (l.url||'').toLowerCase().includes(q);
+      const matchQ = !searchQ || (l.title||'').toLowerCase().includes(searchQ) || (l.url||'').toLowerCase().includes(searchQ);
       return matchTag && matchQ;
     });
 
@@ -509,27 +920,194 @@
            <div class="card-thumb-placeholder" style="display:none">${getSiteEmoji(l.url)}</div>`
         : `<div class="card-thumb-placeholder">${getSiteEmoji(l.url)}</div>`;
 
+      const tags = Array.isArray(l.tags) ? l.tags : (l.tag ? [l.tag] : ['기타']);
+
       return `
-      <div class="card">
-        <a class="card-link" href="${escHtml(l.url)}" target="_blank" rel="noopener"></a>
+      <div class="card" onclick="window._openDetail('${l.id}')">
         ${thumb}
         <div class="card-body">
           <div class="card-title">${escHtml(l.title || getDomain(l.url))}</div>
           <div class="card-url">${escHtml(getDomain(l.url))}</div>
           ${l.desc ? `<div class="card-desc">${escHtml(l.desc)}</div>` : ''}
           <div class="card-footer">
-            <div class="card-tags">${(Array.isArray(l.tags) ? l.tags : (l.tag ? [l.tag] : ['기타'])).map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('')}${l.author ? `<span style="font-size:11px;color:#ccc;align-self:center;">by ${escHtml(l.author)}</span>` : ''}</div>
-            <div class="card-actions">
+            <div class="card-tags">${tags.map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('')}${l.author ? `<span style="font-size:11px;color:#ccc;margin-left:4px">by ${escHtml(l.author)}</span>` : ''}</div>
+            <div class="card-actions" onclick="event.stopPropagation()">
               <button onclick="window._editLink('${l.id}')">수정</button>
               <button class="del-btn" onclick="window._deleteLink('${l.id}')">삭제</button>
             </div>
           </div>
-          ${l.createdAt ? `<div class="card-date">${new Date(l.createdAt).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'})}</div>` : ''}
+          <div class="card-meta">
+            <span>👁 ${l.views || 0}</span>
+            <span>♥ ${l.likes || 0}</span>
+            ${l.createdAt ? `<span>${new Date(l.createdAt).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'})}</span>` : ''}
+          </div>
         </div>
       </div>`;
     }).join('');
   }
 
+  // ========== DETAIL MODAL ==========
+  window._openDetail = async function(id) {
+    const l = links.find(x => x.id === id);
+    if (!l) return;
+    currentDetailLink = l;
+
+    // 조회수 증가
+    updateDoc(doc(db, "links", id), { views: increment(1) });
+
+    // 썸네일
+    const thumbWrap = document.getElementById('detailThumbWrap');
+    if (l.image) {
+      thumbWrap.innerHTML = `<img src="${escHtml(l.image)}" alt="">
+        <div class="detail-thumb-overlay"><span>사이트 방문 →</span></div>`;
+    } else {
+      thumbWrap.innerHTML = `<div class="detail-thumb-placeholder">${getSiteEmoji(l.url)}</div>
+        <div class="detail-thumb-overlay"><span>사이트 방문 →</span></div>`;
+    }
+    thumbWrap.onclick = () => window.open(l.url, '_blank', 'noopener');
+
+    // 태그
+    const tags = Array.isArray(l.tags) ? l.tags : (l.tag ? [l.tag] : ['기타']);
+    document.getElementById('detailTags').innerHTML = tags.map(t => `<span class="detail-tag">${escHtml(t)}</span>`).join('');
+
+    // 제목
+    document.getElementById('detailTitle').textContent = l.title || getDomain(l.url);
+
+    // 메타
+    const metaParts = [];
+    if (l.author) metaParts.push(`👤 ${escHtml(l.author)}`);
+    if (l.createdAt) metaParts.push(`📅 ${new Date(l.createdAt).toLocaleDateString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit'})}`);
+    metaParts.push(`🔗 ${escHtml(getDomain(l.url))}`);
+    document.getElementById('detailMeta').innerHTML = metaParts.map(p => `<span>${p}</span>`).join('');
+
+    // 설명
+    document.getElementById('detailDesc').textContent = l.desc || '';
+
+    // 통계
+    renderDetailStats();
+
+    // 프롬프트 섹션
+    const body = document.getElementById('detailBody');
+    if (tags.includes('프롬프트') && (l.promptIntro || l.promptEnv || l.promptText || l.promptTip)) {
+      let html = '';
+      if (l.promptIntro) html += `
+        <div class="detail-section">
+          <div class="detail-section-title">프롬프트 소개</div>
+          <div class="detail-section-content">${escHtml(l.promptIntro)}</div>
+        </div>`;
+      if (l.promptEnv) html += `
+        <div class="detail-section">
+          <div class="detail-section-title">실행환경</div>
+          <div class="detail-section-content">${escHtml(l.promptEnv)}</div>
+        </div>`;
+      if (l.promptText) html += `
+        <div class="detail-section">
+          <div class="detail-section-title">
+            <span>프롬프트</span>
+            <button class="copy-btn" id="copyPromptBtn" onclick="window._copyPrompt()">복사하기</button>
+          </div>
+          <div class="detail-section-content">${escHtml(l.promptText)}</div>
+        </div>`;
+      if (l.promptTip) html += `
+        <div class="detail-section">
+          <div class="detail-section-title">활용 팁</div>
+          <div class="detail-section-content">${escHtml(l.promptTip)}</div>
+        </div>`;
+      body.innerHTML = html;
+      body.style.display = 'block';
+    } else {
+      body.innerHTML = '';
+      body.style.display = 'none';
+    }
+
+    // 댓글 실시간 구독
+    if (detailCommentUnsub) detailCommentUnsub();
+    const commentsRef = collection(db, "links", id, "comments");
+    const cq = query(commentsRef, orderBy("createdAt", "asc"));
+    detailCommentUnsub = onSnapshot(cq, (snap) => {
+      renderComments(snap.docs.map(d => ({ id: d.id, ...d.data() })));
+    });
+
+    document.getElementById('detailBg').classList.add('open');
+  };
+
+  function renderDetailStats() {
+    if (!currentDetailLink) return;
+    const l = currentDetailLink;
+    const liked = getLikedSet().has(l.id);
+    document.getElementById('detailStats').innerHTML = `
+      <button class="like-btn ${liked ? 'liked' : ''}" id="likeBtn" onclick="window._toggleLike()">
+        ${liked ? '♥' : '♡'} 좋아요 ${l.likes || 0}
+      </button>
+      <span class="stat-item">👁 조회수 ${l.views || 0}</span>
+    `;
+  }
+
+  window._toggleLike = async function() {
+    if (!currentDetailLink) return;
+    const id = currentDetailLink.id;
+    const liked = getLikedSet().has(id);
+    setLiked(id, !liked);
+    await updateDoc(doc(db, "links", id), { likes: increment(liked ? -1 : 1) });
+  };
+
+  window._copyPrompt = function() {
+    if (!currentDetailLink || !currentDetailLink.promptText) return;
+    navigator.clipboard.writeText(currentDetailLink.promptText).then(() => {
+      const btn = document.getElementById('copyPromptBtn');
+      if (btn) {
+        btn.textContent = '복사됨!';
+        btn.classList.add('copied');
+        setTimeout(() => { btn.textContent = '복사하기'; btn.classList.remove('copied'); }, 2000);
+      }
+    });
+  };
+
+  function renderComments(comments) {
+    const list = document.getElementById('commentsList');
+    if (!comments.length) {
+      list.innerHTML = '<div style="color:#444;font-size:13px;padding:4px 0 12px">첫 댓글을 남겨보세요!</div>';
+      return;
+    }
+    list.innerHTML = comments.map(c => `
+      <div class="comment-item">
+        <div class="comment-avatar">${(c.author || '?')[0].toUpperCase()}</div>
+        <div class="comment-content">
+          <div class="comment-author">${escHtml(c.author || '익명')}</div>
+          <div class="comment-text">${escHtml(c.text)}</div>
+          <div class="comment-date">${c.createdAt ? new Date(c.createdAt).toLocaleString('ko-KR', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit'}) : ''}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  window.submitComment = async function() {
+    if (!currentDetailLink) return;
+    const author = document.getElementById('commentAuthor').value.trim() || '익명';
+    const text = document.getElementById('commentText').value.trim();
+    if (!text) return;
+    const commentsRef = collection(db, "links", currentDetailLink.id, "comments");
+    await addDoc(commentsRef, { author, text, createdAt: Date.now() });
+    document.getElementById('commentText').value = '';
+  };
+
+  window.closeDetail = function() {
+    document.getElementById('detailBg').classList.remove('open');
+    if (detailCommentUnsub) { detailCommentUnsub(); detailCommentUnsub = null; }
+    currentDetailLink = null;
+  };
+
+  document.getElementById('detailBg').addEventListener('click', e => {
+    if (e.target === document.getElementById('detailBg')) window.closeDetail();
+  });
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      if (document.getElementById('detailBg').classList.contains('open')) window.closeDetail();
+      else window.closeModal();
+    }
+  });
+
+  // ========== TAG FILTERS ==========
   document.querySelectorAll('.tag-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       if (btn.dataset.tag === '전체') {
@@ -556,6 +1134,11 @@
   document.getElementById('searchInput').addEventListener('input', render);
   document.getElementById('sortSelect').addEventListener('change', render);
 
+  // ========== ADD/EDIT MODAL ==========
+  function updatePromptFields() {
+    document.getElementById('promptFields').classList.toggle('visible', selectedModalTags.has('프롬프트'));
+  }
+
   document.querySelectorAll('.modal-tag').forEach(btn => {
     btn.addEventListener('click', () => {
       if (selectedModalTags.has(btn.dataset.tag)) {
@@ -565,6 +1148,7 @@
         selectedModalTags.add(btn.dataset.tag);
         btn.classList.add('selected');
       }
+      updatePromptFields();
     });
   });
 
@@ -580,20 +1164,24 @@
       document.getElementById('titleInput').value = l.title;
       document.getElementById('descInput').value = l.desc || '';
       document.getElementById('authorInput').value = l.author || '';
+      document.getElementById('promptIntroInput').value = l.promptIntro || '';
+      document.getElementById('promptEnvInput').value = l.promptEnv || '';
+      document.getElementById('promptTextInput').value = l.promptText || '';
+      document.getElementById('promptTipInput').value = l.promptTip || '';
       const existingTags = Array.isArray(l.tags) ? l.tags : (l.tag ? [l.tag] : []);
       selectedModalTags = new Set(existingTags);
       pendingMeta = { image: l.image };
     } else {
-      document.getElementById('urlInput').value = '';
-      document.getElementById('titleInput').value = '';
-      document.getElementById('descInput').value = '';
-      document.getElementById('authorInput').value = '';
+      ['urlInput','titleInput','descInput','authorInput','promptIntroInput','promptEnvInput','promptTextInput','promptTipInput'].forEach(id => {
+        document.getElementById(id).value = '';
+      });
       selectedModalTags = new Set();
     }
 
     document.querySelectorAll('.modal-tag').forEach(b => {
       b.classList.toggle('selected', selectedModalTags.has(b.dataset.tag));
     });
+    updatePromptFields();
   };
 
   window.closeModal = function() {
@@ -648,12 +1236,21 @@
     saveBtn.disabled = true;
     saveBtn.textContent = '저장 중...';
 
+    const tags = [...selectedModalTags];
+    const data = { url, title, desc, author, tags, image: pendingMeta.image || '' };
+
+    if (tags.includes('프롬프트')) {
+      data.promptIntro = document.getElementById('promptIntroInput').value.trim();
+      data.promptEnv = document.getElementById('promptEnvInput').value.trim();
+      data.promptText = document.getElementById('promptTextInput').value.trim();
+      data.promptTip = document.getElementById('promptTipInput').value.trim();
+    }
+
     try {
-      const tags = [...selectedModalTags];
       if (editId) {
-        await updateDoc(doc(db, "links", editId), { url, title, desc, author, tags, image: pendingMeta.image || '' });
+        await updateDoc(doc(db, "links", editId), data);
       } else {
-        await addDoc(colRef, { url, title, desc, author, tags, image: pendingMeta.image || '', createdAt: Date.now() });
+        await addDoc(colRef, { ...data, createdAt: Date.now(), views: 0, likes: 0 });
       }
       window.closeModal();
     } catch(e) {
