@@ -1644,7 +1644,10 @@
       const imageUrls = [];
       for (const file of selectedImageFiles) {
         const sRef = storageRef(storage, `prompts/${Date.now()}_${file.name}`);
-        const snapshot = await uploadBytes(sRef, file);
+        const snapshot = await Promise.race([
+          uploadBytes(sRef, file),
+          new Promise((_, reject) => setTimeout(() => reject(new Error('업로드 시간 초과 (30초). Firebase Storage CORS 설정이 필요할 수 있습니다.')), 30000))
+        ]);
         const url = await getDownloadURL(snapshot.ref);
         imageUrls.push(url);
       }
@@ -1667,6 +1670,9 @@
       window.closePromptModal();
     } catch(e) {
       alert('저장 실패: ' + e.message);
+      btn.disabled = false;
+      btn.textContent = '저장';
+      return;
     }
 
     btn.disabled = false;
