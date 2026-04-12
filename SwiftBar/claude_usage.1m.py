@@ -23,8 +23,11 @@ def load_today_usage():
     output_tokens = 0
     cache_read = 0
     cache_write = 0
-    session_tokens = 0
-    session_start = None
+
+    session_input = 0
+    session_output = 0
+    session_cache_read = 0
+    session_cache_write = 0
 
     # 세션 감지용 (최근 5시간 - Claude Pro 리셋 주기)
     recent_threshold = now.timestamp() - 5 * 3600
@@ -63,24 +66,33 @@ def load_today_usage():
                         cache_read += cr
                         cache_write += cw
 
-                        # 현재 세션 (최근 1시간)
+                        # 현재 세션 (최근 5시간)
                         if dt.timestamp() >= recent_threshold:
-                            session_tokens += inp + out
-                            if session_start is None or dt < session_start:
-                                session_start = dt
+                            session_input += inp
+                            session_output += out
+                            session_cache_read += cr
+                            session_cache_write += cw
 
                     except Exception:
                         continue
         except Exception:
             continue
 
+    # 캐시 포함 실제 사용량
+    session_total = session_input + session_output + session_cache_read + session_cache_write
+    day_total = input_tokens + output_tokens + cache_read + cache_write
+
     return {
         "input": input_tokens,
         "output": output_tokens,
         "cache_read": cache_read,
         "cache_write": cache_write,
-        "total": input_tokens + output_tokens,
-        "session": session_tokens,
+        "total": day_total,
+        "session_input": session_input,
+        "session_output": session_output,
+        "session_cache_read": session_cache_read,
+        "session_cache_write": session_cache_write,
+        "session": session_total,
     }
 
 def format_num(n):
@@ -111,11 +123,13 @@ def main():
     print(f"◆ {format_num(session)} ({session_pct}%) | size=13 color={color}")
     print("---")
     print(f"현재 세션 (5시간) | size=12 color=#888888")
-    print(f"입력: {format_num(data['input'])}  출력: {format_num(data['output'])} | size=12")
-    print(f"캐시 읽기: {format_num(data['cache_read'])}  캐시 쓰기: {format_num(data['cache_write'])} | size=12 color=#888888")
+    print(f"입력: {format_num(data['session_input'])}  출력: {format_num(data['session_output'])} | size=12")
+    print(f"캐시 읽기: {format_num(data['session_cache_read'])}  캐시 쓰기: {format_num(data['session_cache_write'])} | size=12 color=#888888")
     print("---")
     total_pct = min(int(total / LIMIT * 100), 100)
-    print(f"오늘 누적: {format_num(total)} tokens ({total_pct}%) | size=12 color=#60a5fa")
+    print(f"오늘 누적: {format_num(total)} (캐시 포함) | size=12 color=#60a5fa")
+    print(f"  입력: {format_num(data['input'])}  출력: {format_num(data['output'])} | size=11 color=#888888")
+    print(f"  캐시 읽기: {format_num(data['cache_read'])}  캐시 쓰기: {format_num(data['cache_write'])} | size=11 color=#888888")
     print("---")
     now_str = datetime.now().strftime("%H:%M 기준")
     print(f"{now_str} | size=11 color=#555555")
