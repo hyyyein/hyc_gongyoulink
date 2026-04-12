@@ -1031,7 +1031,6 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-app.js";
   import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, orderBy, query, increment, getDocs } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-firestore.js";
-  import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.11.0/firebase-storage.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyBAPs7d59vZFkw2RSLUesnudcrZnNhxEdg",
@@ -1044,7 +1043,6 @@
 
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
-  const storage = getStorage(app);
   const colRef = collection(db, "links");
 
   let links = [];
@@ -1643,13 +1641,29 @@
     try {
       const imageUrls = [];
       for (const file of selectedImageFiles) {
-        const sRef = storageRef(storage, `prompts/${Date.now()}_${file.name}`);
-        const snapshot = await Promise.race([
-          uploadBytes(sRef, file),
-          new Promise((_, reject) => setTimeout(() => reject(new Error('업로드 시간 초과 (30초). Firebase Storage CORS 설정이 필요할 수 있습니다.')), 30000))
-        ]);
-        const url = await getDownloadURL(snapshot.ref);
-        imageUrls.push(url);
+        const dataUrl = await new Promise((resolve, reject) => {
+          const img = new Image();
+          const reader = new FileReader();
+          reader.onload = e => {
+            img.onload = () => {
+              const MAX = 800;
+              let w = img.width, h = img.height;
+              if (w > MAX || h > MAX) {
+                if (w > h) { h = Math.round(h * MAX / w); w = MAX; }
+                else { w = Math.round(w * MAX / h); h = MAX; }
+              }
+              const canvas = document.createElement('canvas');
+              canvas.width = w; canvas.height = h;
+              canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+              resolve(canvas.toDataURL('image/jpeg', 0.75));
+            };
+            img.onerror = reject;
+            img.src = e.target.result;
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+        imageUrls.push(dataUrl);
       }
 
       const tags = [...selectedPromptModalTags];
