@@ -1151,7 +1151,7 @@
         <div class="card-body">
           <div class="card-title">${escHtml(l.title || (l.url ? getDomain(l.url) : '제목 없음'))}</div>
           <div class="card-url">${l.url ? escHtml(getDomain(l.url)) : ''}</div>
-          ${l.desc ? `<div class="card-desc">${escHtml(l.desc)}</div>` : ''}
+          <div class="card-desc">${escHtml(l.desc || l.promptIntro || '')}</div>
           <div class="card-bottom">
           <div class="card-footer">
             <div class="card-tags">${tags.map(t => `<span class="card-tag">${escHtml(t)}</span>`).join('')}</div>
@@ -1492,13 +1492,13 @@
     const title = document.getElementById('titleInput').value.trim() || getDomain(url);
     const desc = document.getElementById('descInput').value.trim();
     const author = document.getElementById('authorInput').value.trim();
-    if (!url) return;
+    const tags = [...selectedModalTags];
+    if (!url && !tags.includes('프롬프트')) return;
 
     const saveBtn = document.getElementById('saveBtn');
     saveBtn.disabled = true;
     saveBtn.textContent = '저장 중...';
 
-    const tags = [...selectedModalTags];
     const data = { url, title, desc, author, tags, image: pendingMeta.image || '' };
 
     if (tags.includes('프롬프트')) {
@@ -1512,7 +1512,7 @@
       if (editId) {
         await updateDoc(doc(db, "links", editId), data);
       } else {
-        await addDoc(colRef, { ...data, createdAt: Date.now(), views: 0, likes: 0 });
+        await addDoc(colRef, { ...data, createdAt: Date.now(), views: 0, likes: 0, commentCount: 0 });
       }
       window.closeModal();
     } catch(e) {
@@ -1537,6 +1537,8 @@
 
   window._deleteLink = async function(id) {
     if (!confirm('삭제할까요?')) return;
+    const commentsSnap = await getDocs(collection(db, "links", id, "comments"));
+    await Promise.all(commentsSnap.docs.map(d => deleteDoc(d.ref)));
     await deleteDoc(doc(db, "links", id));
   };
 
