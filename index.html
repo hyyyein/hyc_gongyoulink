@@ -853,6 +853,27 @@
   /* Eye icon */
   .eye-icon { display: inline-flex; align-items: center; gap: 2px; vertical-align: middle; }
 
+  /* ========== MOBILE ========== */
+  @media (max-width: 600px) {
+    header {
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 10px 14px;
+    }
+    header h1 { font-size: 14px; }
+    .header-quote { font-size: 13px; width: 100%; text-align: center; order: 3; }
+    .header-btns { gap: 4px; }
+    .add-btn, .add-btn-secondary { font-size: 11px; padding: 5px 9px; }
+    .controls { padding: 8px 12px; gap: 6px; }
+    .grid { padding: 12px 10px 60px; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .card { height: 300px; }
+    .card-thumb, .card-thumb-placeholder { height: 110px; }
+  }
+  @media (max-width: 400px) {
+    .grid { grid-template-columns: 1fr; }
+    .card { height: 340px; }
+    .card-thumb, .card-thumb-placeholder { height: 140px; }
+  }
 
 </style>
 </head>
