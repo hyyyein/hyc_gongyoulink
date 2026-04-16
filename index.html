@@ -971,6 +971,91 @@
     border-bottom: 2px solid #cce4f8;
   }
 
+  /* ========== NOTICE POPUP ========== */
+  .notice-bg {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(100,150,200,0.45);
+    z-index: 300;
+    align-items: center;
+    justify-content: center;
+  }
+  .notice-bg.open { display: flex; }
+  .notice-box {
+    background: #f0f8ff;
+    border: 2px solid var(--border-dark);
+    border-radius: 6px;
+    width: 360px;
+    max-width: 92vw;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.12);
+    overflow: hidden;
+  }
+  .notice-title {
+    background: var(--header-bg);
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 8px 14px;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.15);
+    text-align: center;
+  }
+  .notice-body {
+    padding: 14px 16px 10px;
+    font-size: 12px;
+    color: #444;
+    line-height: 1.8;
+  }
+  .notice-date {
+    font-size: 10px;
+    color: var(--muted);
+    margin-bottom: 8px;
+    padding-bottom: 6px;
+    border-bottom: 1px dashed var(--border);
+  }
+  .notice-body ul { padding-left: 4px; list-style: none; }
+  .notice-body li { margin-bottom: 3px; display: flex; align-items: baseline; gap: 6px; }
+  .notice-body li span {
+    background: var(--sky-pale);
+    color: var(--sky);
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    font-size: 9px;
+    font-weight: bold;
+    padding: 0 4px;
+    flex-shrink: 0;
+  }
+  .notice-body li span:first-child:not([style]) { }
+  .notice-footer {
+    padding: 10px 16px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px dashed var(--border);
+  }
+  .notice-no-today {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    cursor: pointer;
+    user-select: none;
+  }
+  .notice-no-today input { cursor: pointer; accent-color: var(--sky); }
+  .notice-close-btn {
+    background: var(--sky);
+    color: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    padding: 5px 16px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .notice-close-btn:hover { background: #4488bb; }
+
   /* Author quick buttons */
   .author-quick-btns {
     display: flex;
@@ -1245,6 +1330,31 @@
   </div>
 </div>
 
+<!-- Notice Popup -->
+<div class="notice-bg" id="noticeBg">
+  <div class="notice-box">
+    <div class="notice-title">✦ 업데이트 소식 ✦</div>
+    <div class="notice-body">
+      <div class="notice-date">2026년 4월 17일</div>
+      <ul>
+        <li><span>NEW</span> NEW 딱지 — 올린 지 2일 이내 카드에 자동 표시</li>
+        <li><span>NEW</span> 작성자 빠른 선택 버튼 추가 (혜인/문이/센 등)</li>
+        <li><span>UI</span> 싸이월드 Y2K 디자인 개편 (3D 버튼, 스파클 애니메이션)</li>
+        <li><span>UI</span> 모바일 헤더 레이아웃 최적화</li>
+        <li><span>FIX</span> by 이름 클릭 필터 버그 수정</li>
+        <li><span>FIX</span> 게시물 삭제 시 댓글도 함께 삭제</li>
+        <li><span>FIX</span> 카드 하단 정보 레이아웃 개선 (날짜 우측 정렬)</li>
+      </ul>
+    </div>
+    <div class="notice-footer">
+      <label class="notice-no-today">
+        <input type="checkbox" id="noticeNoToday"> 오늘 다시 보지 않기
+      </label>
+      <button class="notice-close-btn" onclick="window.closeNotice()">확인</button>
+    </div>
+  </div>
+</div>
+
 <!-- Detail Modal -->
 <div class="detail-bg" id="detailBg">
   <div class="detail-modal" id="detailModal">
@@ -1283,6 +1393,26 @@
     storageBucket: "sharelink-54e34.firebasestorage.app",
     messagingSenderId: "694782332637",
     appId: "1:694782332637:web:c4bbacb2b0fe34509e1534"
+  };
+
+  // ========== NOTICE POPUP (4/17 only) ==========
+  (function() {
+    const d = new Date();
+    const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+    const noticeDate = '2026-04-17';
+    const hidden = localStorage.getItem('noticeHidden_0417');
+    if (today === noticeDate && hidden !== today) {
+      document.getElementById('noticeBg').classList.add('open');
+    }
+  })();
+
+  window.closeNotice = function() {
+    if (document.getElementById('noticeNoToday').checked) {
+      const d = new Date();
+      const today = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+      localStorage.setItem('noticeHidden_0417', today);
+    }
+    document.getElementById('noticeBg').classList.remove('open');
   };
 
   const app = initializeApp(firebaseConfig);
