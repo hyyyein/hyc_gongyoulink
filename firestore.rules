@@ -1,0 +1,38 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /links/{linkId} {
+      // 누구나 읽기 가능
+      allow read: if true;
+
+      // 생성: title 필드가 있고 비어있지 않아야 함
+      allow create: if request.resource.data.keys().hasAll(['title', 'createdAt'])
+                    && request.resource.data.title is string
+                    && request.resource.data.title.size() > 0
+                    && request.resource.data.title.size() <= 500;
+
+      // 수정: 조회수/좋아요/댓글수 증감, 실제 필드 수정 모두 허용
+      allow update: if true;
+
+      // 삭제: 허용 (삭제 기능 필요)
+      allow delete: if true;
+
+      // 댓글 서브컬렉션
+      match /comments/{commentId} {
+        allow read: if true;
+
+        // 생성: text 필드가 있고 비어있지 않아야 함 (1000자 제한)
+        allow create: if request.resource.data.keys().hasAll(['text', 'createdAt'])
+                      && request.resource.data.text is string
+                      && request.resource.data.text.size() > 0
+                      && request.resource.data.text.size() <= 1000;
+
+        // 수정 불가
+        allow update: if false;
+
+        // 삭제: 허용 (링크 삭제 시 cascade delete 필요)
+        allow delete: if true;
+      }
+    }
+  }
+}
