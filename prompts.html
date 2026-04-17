@@ -882,83 +882,275 @@
 
 <!-- ===== Prompt Add Modal ===== -->
 <div style="display:none;position:fixed;inset:0;background:rgba(100,150,200,0.5);z-index:500;align-items:center;justify-content:center" id="promptModalBg">
-  <div style="background:#f0f8ff;border:2px solid var(--border-dark);border-radius:6px;width:520px;max-width:92vw;max-height:90vh;overflow-y:auto;box-shadow:3px 3px 0 rgba(0,0,0,0.15)">
-    <h2 style="font-size:13px;font-weight:bold;padding:8px 14px;background:var(--header-bg);color:#fff;border-radius:4px 4px 0 0;text-shadow:1px 1px 0 rgba(0,0,0,0.2);margin-bottom:0">프롬프트 추가</h2>
-    <div style="padding:0 16px">
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:14px;margin-bottom:4px">제목</label>
-      <input type="text" id="pTitleInput" placeholder="프롬프트 제목" style="width:100%;background:#fff;border:1px solid var(--border-dark);border-radius:3px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit">
+  <div class="prompt-modal-box">
+    <div class="pm-header">✦ 프롬프트 추가</div>
 
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">올린 사람 <span style="color:#555;font-weight:normal">(선택)</span></label>
-      <input type="text" id="pAuthorInput" placeholder="닉네임..." style="width:100%;background:#fff;border:1px solid var(--border-dark);border-radius:3px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit">
-      <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='혜인'">혜인</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='문이'">문이</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='센'">센</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='종석'">종석</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='쥐'">쥐</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='헨지'">헨지</button>
-        <button type="button" class="author-quick" onclick="document.getElementById('pAuthorInput').value='건우'">건우</button>
-      </div>
-
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">태그</label>
-      <div class="modal-tags" id="promptModalTagsContainer" style="display:flex;gap:4px;flex-wrap:wrap">
-        <button class="modal-tag selected" data-tag="프롬프트">프롬프트</button>
-        <button class="modal-tag" data-tag="AI">AI</button>
-        <button class="modal-tag" data-tag="ComfyUI">ComfyUI</button>
-        <button class="modal-tag" data-tag="NAI">NAI</button>
-        <button class="modal-tag" data-tag="미드저니">미드저니</button>
-        <button class="modal-tag" data-tag="NanoBanana">NanoBanana</button>
-        <button class="modal-tag" data-tag="이미지">이미지</button>
-        <button class="modal-tag" data-tag="영상">영상</button>
-        <button class="modal-tag" data-tag="기타">기타</button>
-      </div>
-
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">결과물 이미지 <span style="color:#555;font-weight:normal">(여러 장 가능)</span></label>
-      <div onclick="document.getElementById('imageFiles').click()" style="border:1.5px dashed var(--border-dark);border-radius:3px;padding:18px;text-align:center;cursor:pointer;color:var(--muted);font-size:12px;background:#f8fcff;transition:border-color 0.1s,background 0.1s" onmouseover="this.style.borderColor='var(--sky)';this.style.background='var(--sky-pale)'" onmouseout="this.style.borderColor='var(--border-dark)';this.style.background='#f8fcff'">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin-bottom:6px;display:block;margin-left:auto;margin-right:auto"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        클릭해서 이미지 선택
+    <!-- 이미지 업로드 -->
+    <div class="pm-section">
+      <div class="pm-drop-zone" id="pmDropZone">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        <span>이미지 드래그하거나 클릭해서 선택</span>
         <input type="file" id="imageFiles" accept="image/*,.heic,.heif" multiple style="display:none" onchange="handleImageSelect(event)">
       </div>
-      <div class="upload-preview" id="uploadPreview" style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px"></div>
+      <div class="upload-preview" id="uploadPreview"></div>
+    </div>
 
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">프롬프트 소개</label>
-      <textarea id="pPromptIntroInput" placeholder="어떤 용도의 프롬프트인지 간단히..." style="width:100%;background:#fff;border:1px solid var(--border-dark);border-radius:3px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit;resize:vertical;min-height:55px"></textarea>
+    <!-- 프롬프트 본문 -->
+    <div class="pm-section">
+      <textarea id="pPromptTextInput" class="pm-prompt-ta" placeholder="프롬프트를 입력하세요...&#10;(이미지 또는 프롬프트 중 하나만 있어도 OK)"></textarea>
+    </div>
 
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">실행환경 <span style="color:#555;font-weight:normal">(예: ComfyUI, NAI, 미드저니)</span></label>
-      <input type="text" id="pPromptEnvInput" placeholder="실행환경..." style="width:100%;background:#fff;border:1px solid var(--border-dark);border-radius:3px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit">
-
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">프롬프트</label>
-      <textarea id="pPromptTextInput" placeholder="프롬프트 본문..." style="width:100%;background:#f8fcff;border:1px solid var(--border-dark);border-radius:3px;padding:8px 10px;color:var(--text);font-size:12px;outline:none;font-family:'Courier New',monospace;resize:vertical;min-height:120px;line-height:1.6;border-left:3px solid var(--sky)"></textarea>
-
-      <label style="display:block;font-size:11px;color:var(--sky);font-weight:bold;margin-top:12px;margin-bottom:4px">활용 팁 <span style="color:#555;font-weight:normal">(선택)</span></label>
-      <textarea id="pPromptTipInput" placeholder="사용 팁이나 주의사항..." style="width:100%;background:#fff;border:1px solid var(--border-dark);border-radius:3px;padding:6px 10px;color:var(--text);font-size:12px;outline:none;font-family:inherit;resize:vertical;min-height:55px"></textarea>
-
-      <label style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:8px 10px;background:linear-gradient(135deg,#fff0f6 0%,#ffe8f2 100%);border:1px dashed var(--pink-border);border-radius:3px;cursor:pointer;font-size:12px;color:var(--pink-deep);font-weight:bold">
-        <input type="checkbox" id="pPinnedInput" style="cursor:pointer;accent-color:var(--pink)">
-        <span>✦ 혜인님 PICK에 고정</span>
-      </label>
-
-      <div style="display:flex;justify-content:flex-end;gap:6px;margin-top:16px;margin-bottom:16px">
-        <button onclick="closePromptModal()" style="padding:5px 14px;background:#eee;border:1px solid #bbb;border-radius:3px;color:#666;font-size:12px;cursor:pointer;font-family:inherit">취소</button>
-        <button id="pSaveBtn" onclick="savePrompt()" style="padding:5px 16px;background:var(--sky);color:#fff;border:1px solid var(--border-dark);border-radius:3px;font-size:12px;font-weight:bold;cursor:pointer;font-family:inherit">저장</button>
+    <!-- 실행환경 버튼 -->
+    <div class="pm-section pm-section-env">
+      <div class="pm-env-group" id="pmEnvGroup">
+        <button type="button" class="pm-env-btn" data-env="이미지">🎨 이미지</button>
+        <button type="button" class="pm-env-btn" data-env="영상">🎬 영상</button>
+        <button type="button" class="pm-env-btn" data-env="ComfyUI">ComfyUI</button>
+        <button type="button" class="pm-env-btn" data-env="NAI">NAI</button>
+        <button type="button" class="pm-env-btn" data-env="미드저니">미드저니</button>
+        <button type="button" class="pm-env-btn" data-env="NanoBanana">NanoBanana</button>
+        <button type="button" class="pm-env-btn" data-env="AI">AI</button>
+        <button type="button" class="pm-env-btn" data-env="기타">기타</button>
       </div>
+      <input type="text" id="pmEnvCustomInput" class="pm-env-custom-input" placeholder="기타 환경 직접 입력...">
+    </div>
+
+    <!-- 상세 정보 (접기/펼치기) -->
+    <div class="pm-collapse">
+      <button type="button" class="pm-collapse-btn" id="pmCollapseBtn" onclick="togglePromptDetail()"><span id="pmCollapseArrow">▶</span> 상세 정보</button>
+      <div class="pm-collapse-body" id="pmCollapseBody">
+        <label class="pm-label">프롬프트 소개</label>
+        <textarea id="pPromptIntroInput" class="pm-ta-sm" placeholder="어떤 용도의 프롬프트인지 간단히..."></textarea>
+
+        <label class="pm-label">활용 팁 <span class="pm-opt">(선택)</span></label>
+        <textarea id="pPromptTipInput" class="pm-ta-sm" placeholder="사용 팁이나 주의사항..."></textarea>
+
+        <label class="pm-label">제목 <span class="pm-opt">(비우면 프롬프트 첫 줄로 자동 설정)</span></label>
+        <input type="text" id="pTitleInput" class="pm-input" placeholder="프롬프트 제목">
+
+        <label class="pm-label">올린 사람 <span class="pm-opt">(선택)</span></label>
+        <input type="text" id="pAuthorInput" class="pm-input" placeholder="닉네임...">
+        <div style="display:flex;gap:4px;margin-top:5px;flex-wrap:wrap">
+          <button type="button" class="author-quick" data-name="혜인" onclick="setAuthorQuick(this)">혜인</button>
+          <button type="button" class="author-quick" data-name="문이" onclick="setAuthorQuick(this)">문이</button>
+          <button type="button" class="author-quick" data-name="센" onclick="setAuthorQuick(this)">센</button>
+          <button type="button" class="author-quick" data-name="종석" onclick="setAuthorQuick(this)">종석</button>
+          <button type="button" class="author-quick" data-name="쥐" onclick="setAuthorQuick(this)">쥐</button>
+          <button type="button" class="author-quick" data-name="헨지" onclick="setAuthorQuick(this)">헨지</button>
+          <button type="button" class="author-quick" data-name="건우" onclick="setAuthorQuick(this)">건우</button>
+        </div>
+
+        <label style="display:flex;align-items:center;gap:8px;margin-top:12px;padding:8px 10px;background:linear-gradient(135deg,#fff0f6 0%,#ffe8f2 100%);border:1px dashed var(--pink-border);border-radius:3px;cursor:pointer;font-size:12px;color:var(--pink-deep);font-weight:bold">
+          <input type="checkbox" id="pPinnedInput" style="cursor:pointer;accent-color:var(--pink)">
+          <span>✦ 혜인님 PICK에 고정</span>
+        </label>
+      </div>
+    </div>
+
+    <!-- 하단 버튼 -->
+    <div class="pm-footer">
+      <button type="button" onclick="closePromptModal()" class="pm-btn-cancel">취소</button>
+      <button type="button" id="pSaveBtn" onclick="savePrompt()" class="pm-btn-save">저장</button>
     </div>
   </div>
 </div>
 
 <style>
-  .modal-tag {
+  /* ===== 프롬프트 추가 모달 ===== */
+  .prompt-modal-box {
+    background: #f0f8ff;
+    border: 2px solid var(--border-dark);
+    border-radius: 6px;
+    width: 520px;
+    max-width: 92vw;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 3px 3px 0 rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column;
+  }
+  .pm-header {
+    font-size: 13px;
+    font-weight: bold;
+    padding: 10px 14px;
+    background: var(--header-bg);
+    color: #fff;
+    border-radius: 4px 4px 0 0;
+    text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+    flex-shrink: 0;
+  }
+  .pm-section {
+    padding: 10px 14px 0;
+  }
+  .pm-section-env {
+    padding-bottom: 4px;
+  }
+  .pm-drop-zone {
+    border: 1.5px dashed var(--border-dark);
+    border-radius: 3px;
+    padding: 14px;
+    text-align: center;
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 12px;
+    background: #f8fcff;
+    transition: border-color 0.1s, background 0.1s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+  }
+  .pm-drop-zone:hover, .pm-drop-zone.drag-over {
+    border-color: var(--sky);
+    background: var(--sky-pale);
+  }
+  .upload-preview {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+  }
+  .pm-prompt-ta {
+    width: 100%;
+    background: #f8fcff;
+    border: 1px solid var(--border-dark);
+    border-left: 3px solid var(--sky);
+    border-radius: 3px;
+    padding: 8px 10px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: 'Courier New', monospace;
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+  .pm-env-group {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .pm-env-btn {
     padding: 3px 10px;
     border-radius: 3px;
     border: 1px solid var(--border);
-    background: #ffffff;
+    background: #fff;
     color: var(--muted);
     font-size: 11px;
     cursor: pointer;
     font-family: '굴림', sans-serif;
     transition: all 0.1s;
   }
-  .modal-tag.selected { background: var(--sky); color: #fff; border-color: var(--border-dark); font-weight: bold; }
+  .pm-env-btn.selected {
+    background: var(--sky);
+    color: #fff;
+    border-color: var(--border-dark);
+    font-weight: bold;
+  }
+  .pm-env-custom-input {
+    display: none;
+    width: 100%;
+    margin-top: 6px;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    padding: 5px 8px;
+    font-size: 11px;
+    outline: none;
+    font-family: inherit;
+  }
+  .pm-env-custom-input:focus { border-color: var(--sky); }
+  .pm-collapse {
+    margin: 8px 14px 0;
+  }
+  .pm-collapse-btn {
+    background: none;
+    border: none;
+    color: var(--sky);
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 4px 0;
+  }
+  .pm-collapse-body {
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.25s ease;
+  }
+  .pm-collapse-body.open {
+    max-height: 700px;
+  }
+  .pm-label {
+    display: block;
+    font-size: 11px;
+    color: var(--sky);
+    font-weight: bold;
+    margin-top: 12px;
+    margin-bottom: 4px;
+  }
+  .pm-opt {
+    color: #555;
+    font-weight: normal;
+  }
+  .pm-ta-sm {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 55px;
+  }
+  .pm-input {
+    width: 100%;
+    background: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    padding: 6px 10px;
+    color: var(--text);
+    font-size: 12px;
+    outline: none;
+    font-family: inherit;
+  }
+  .pm-ta-sm:focus, .pm-input:focus { border-color: var(--sky); }
+  .pm-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 10px 14px;
+    margin-top: 10px;
+    border-top: 1px solid var(--border);
+    flex-shrink: 0;
+  }
+  .pm-btn-cancel {
+    padding: 5px 14px;
+    background: #eee;
+    border: 1px solid #bbb;
+    border-radius: 3px;
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .pm-btn-save {
+    padding: 5px 16px;
+    background: var(--sky);
+    color: #fff;
+    border: 1px solid var(--border-dark);
+    border-radius: 3px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .pm-btn-save:hover { background: #4488bb; }
+
+  /* author quick buttons */
   .author-quick {
     padding: 2px 10px;
     font-size: 11px;
@@ -972,6 +1164,13 @@
     transition: filter 0.1s;
   }
   .author-quick:hover { filter: brightness(1.1); }
+  .author-quick.active {
+    background: linear-gradient(135deg, #cc4477 0%, #aa2255 100%);
+    border-color: #881133;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.25);
+  }
+
+  /* upload thumbnails */
   .upload-thumb {
     width: 60px;
     height: 60px;
@@ -1055,7 +1254,8 @@
   let detailCommentUnsub = null;
   let carouselIndex = 0;
   let selectedImageFiles = [];
-  let selectedPromptModalTags = new Set(['프롬프트']);
+  let selectedEnvs = new Set();
+  let detailOpen = localStorage.getItem('promptDetailOpen') === '1';
 
   // 프롬프트 항목만 필터 (tags에 '프롬프트' 포함 + promptText 있음)
   function isPromptItem(l) {
@@ -1394,16 +1594,21 @@
 
   // ========== 프롬프트 추가 모달 ==========
   window.openPromptModal = function() {
-    selectedPromptModalTags = new Set(['프롬프트']);
     selectedImageFiles = [];
-    ['pTitleInput','pAuthorInput','pPromptIntroInput','pPromptEnvInput','pPromptTextInput','pPromptTipInput'].forEach(id => {
+    selectedEnvs = new Set();
+    ['pTitleInput','pAuthorInput','pPromptIntroInput','pPromptTextInput','pPromptTipInput'].forEach(id => {
       document.getElementById(id).value = '';
     });
     document.getElementById('pPinnedInput').checked = false;
     document.getElementById('uploadPreview').innerHTML = '';
-    document.querySelectorAll('#promptModalTagsContainer .modal-tag').forEach(b => {
-      b.classList.toggle('selected', selectedPromptModalTags.has(b.dataset.tag));
-    });
+    document.getElementById('pmEnvCustomInput').value = '';
+    document.getElementById('pmEnvCustomInput').style.display = 'none';
+    document.querySelectorAll('.pm-env-btn').forEach(b => b.classList.remove('selected'));
+    document.querySelectorAll('.author-quick').forEach(b => b.classList.remove('active'));
+    const body = document.getElementById('pmCollapseBody');
+    const arrow = document.getElementById('pmCollapseArrow');
+    if (detailOpen) { body.classList.add('open'); arrow.textContent = '▼'; }
+    else { body.classList.remove('open'); arrow.textContent = '▶'; }
     document.getElementById('promptModalBg').classList.add('open');
     document.body.style.overflow = 'hidden';
   };
@@ -1413,21 +1618,52 @@
     document.body.style.overflow = '';
   };
 
+  window.togglePromptDetail = function() {
+    const body = document.getElementById('pmCollapseBody');
+    const arrow = document.getElementById('pmCollapseArrow');
+    detailOpen = !body.classList.contains('open');
+    body.classList.toggle('open');
+    arrow.textContent = detailOpen ? '▼' : '▶';
+    localStorage.setItem('promptDetailOpen', detailOpen ? '1' : '0');
+  };
+
   document.getElementById('promptModalBg').addEventListener('click', e => {
     if (e.target === document.getElementById('promptModalBg')) window.closePromptModal();
   });
 
-  document.querySelectorAll('#promptModalTagsContainer .modal-tag').forEach(btn => {
+  // 실행환경 버튼 선택
+  document.querySelectorAll('.pm-env-btn').forEach(btn => {
     btn.addEventListener('click', () => {
-      if (btn.dataset.tag === '프롬프트') return;
-      if (selectedPromptModalTags.has(btn.dataset.tag)) {
-        selectedPromptModalTags.delete(btn.dataset.tag);
+      const env = btn.dataset.env;
+      if (btn.classList.contains('selected')) {
         btn.classList.remove('selected');
+        selectedEnvs.delete(env);
+        if (env === '기타') {
+          document.getElementById('pmEnvCustomInput').style.display = 'none';
+          document.getElementById('pmEnvCustomInput').value = '';
+        }
       } else {
-        selectedPromptModalTags.add(btn.dataset.tag);
         btn.classList.add('selected');
+        selectedEnvs.add(env);
+        if (env === '기타') {
+          const ci = document.getElementById('pmEnvCustomInput');
+          ci.style.display = 'block';
+          ci.focus();
+        }
       }
     });
+  });
+
+  // 드래그 앤 드롭
+  const dropZone = document.getElementById('pmDropZone');
+  dropZone.addEventListener('click', () => document.getElementById('imageFiles').click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('drag-over'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('drag-over'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('drag-over');
+    const files = [...e.dataTransfer.files].filter(f => f.type.startsWith('image/') || /\.(heic|heif)$/i.test(f.name));
+    if (files.length) { selectedImageFiles = [...selectedImageFiles, ...files]; renderUploadPreview(); }
   });
 
   window.handleImageSelect = function(e) {
@@ -1451,13 +1687,35 @@
     renderUploadPreview();
   };
 
+  window.setAuthorQuick = function(btn) {
+    const name = btn.dataset.name;
+    const input = document.getElementById('pAuthorInput');
+    if (input.value === name) {
+      input.value = '';
+      btn.classList.remove('active');
+    } else {
+      input.value = name;
+      document.querySelectorAll('.author-quick').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+    }
+  };
+
   window.savePrompt = async function() {
-    const title = document.getElementById('pTitleInput').value.trim();
-    if (!title) { alert('제목을 입력해주세요'); return; }
+    const promptText = document.getElementById('pPromptTextInput').value.trim();
+    const hasImages = selectedImageFiles.length > 0;
+    if (!promptText && !hasImages) {
+      alert('이미지 또는 프롬프트 텍스트를 입력해주세요');
+      return;
+    }
+
+    // 제목: 수동 입력 → 프롬프트 첫 줄(줄바꿈 전) → 무제
+    let title = document.getElementById('pTitleInput').value.trim();
+    if (!title && promptText) title = promptText.split('\n')[0].trim().slice(0, 100);
+    if (!title) title = '무제 프롬프트';
 
     const btn = document.getElementById('pSaveBtn');
     btn.disabled = true;
-    btn.textContent = selectedImageFiles.length > 0 ? '업로드 중...' : '저장 중...';
+    btn.textContent = hasImages ? '업로드 중...' : '저장 중...';
 
     try {
       const imageUrls = [];
@@ -1484,17 +1742,24 @@
           reader.onerror = () => reject(new Error(`"${file.name}" 파일 읽기 실패`));
           reader.readAsDataURL(file);
         });
-        if (dataUrl.length > 250 * 1024) {
-          throw new Error(`이미지가 너무 큽니다 (${Math.round(dataUrl.length/1024)}KB)`);
-        }
+        if (dataUrl.length > 250 * 1024) throw new Error(`이미지가 너무 큽니다 (${Math.round(dataUrl.length/1024)}KB)`);
         imageUrls.push(dataUrl);
       }
       const totalSize = imageUrls.reduce((sum, u) => sum + u.length, 0);
-      if (totalSize > 700 * 1024) {
-        throw new Error(`이미지 총 용량이 너무 큽니다 (${Math.round(totalSize/1024)}KB)`);
+      if (totalSize > 700 * 1024) throw new Error(`이미지 총 용량이 너무 큽니다 (${Math.round(totalSize/1024)}KB)`);
+
+      // 태그: ['프롬프트'] + 선택된 환경 + 기타 커스텀 값
+      const customEnv = document.getElementById('pmEnvCustomInput').value.trim();
+      const tags = ['프롬프트'];
+      for (const env of selectedEnvs) {
+        if (env === '기타') { if (customEnv) tags.push(customEnv); }
+        else tags.push(env);
       }
 
-      const tags = [...selectedPromptModalTags];
+      const promptEnv = [...selectedEnvs]
+        .map(env => env === '기타' ? (customEnv || '기타') : env)
+        .join(', ');
+
       const pinned = document.getElementById('pPinnedInput').checked;
       const docData = {
         title,
@@ -1502,8 +1767,8 @@
         tags,
         images: imageUrls,
         promptIntro: document.getElementById('pPromptIntroInput').value.trim(),
-        promptEnv: document.getElementById('pPromptEnvInput').value.trim(),
-        promptText: document.getElementById('pPromptTextInput').value.trim(),
+        promptEnv,
+        promptText,
         promptTip: document.getElementById('pPromptTipInput').value.trim(),
         createdAt: Date.now(),
         views: 0,
