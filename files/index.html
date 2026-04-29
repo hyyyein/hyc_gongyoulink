@@ -1333,39 +1333,59 @@
   /* ===== 페이지 네비 바 ===== */
   .page-nav {
     display: flex;
-    align-items: flex-end;
-    gap: 3px;
-    padding: 12px 20px 0;
-    background: linear-gradient(180deg, #f0f8ff 0%, #e4f0fc 100%);
-    border-top: 2px solid #b0d8f0;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 20px 16px 6px;
+    background: transparent;
+    position: relative;
   }
   .page-nav-tab {
+    position: relative;
     padding: 6px 16px;
     font-family: '굴림', 'Gulim', sans-serif;
     font-size: 11px;
     font-weight: bold;
-    color: #336699;
-    background: #ddeeff;
-    border-top: 2px solid #e0eeff;
-    border-left: 2px solid #e0eeff;
-    border-right: 2px solid #7aabcc;
-    border-bottom: none;
+    color: var(--muted);
+    background: #fff;
+    border: 1px solid var(--border-dark);
     border-radius: 3px 3px 0 0;
+    border-bottom: none;
     cursor: pointer;
     text-decoration: none;
     display: inline-flex;
     align-items: center;
     gap: 4px;
-    transition: background 0.05s;
+    transition: all 0.15s;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
   }
-  .page-nav-tab:hover { background: #cce0f8; }
+  .page-nav-tab:hover {
+    color: var(--sky);
+    background: #f5faff;
+    transform: translateY(-1px);
+  }
   .page-nav-tab.active {
-    background: var(--sky);
-    color: #fff;
-    border-top: 2px solid #4488bb;
-    border-left: 2px solid #4488bb;
-    border-right: 2px solid #88ccee;
+    color: #c04878;
+    background: linear-gradient(180deg, #fff5f8 0%, #ffeef5 100%);
+    border-color: #f0b8d0;
+    padding: 7px 18px;
+    font-size: 12px;
     z-index: 2;
+  }
+  .page-nav-tab.active::before {
+    content: "✦";
+    color: #e890b0;
+    font-size: 10px;
+    animation: sparkle 2s ease-in-out infinite;
+  }
+  .page-nav-tab.prompts-tab {
+    background: linear-gradient(135deg, #fff5f8 0%, #ffe5ee 100%);
+    border-color: #f0b8d0;
+    color: #c04878;
+  }
+  .page-nav-tab.prompts-tab:hover {
+    background: linear-gradient(135deg, #ffe5ee 0%, #ffd5e5 100%);
+    color: #a83860;
   }
 
   @media (max-width: 600px) {
